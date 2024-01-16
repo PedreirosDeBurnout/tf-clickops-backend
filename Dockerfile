@@ -3,20 +3,22 @@ FROM node:21-alpine AS build
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+RUN npm install
 
-RUN npm install --production
-
-# EXPOSE 3030
+COPY src ./
+COPY tsconfig.json ./
+RUN npm run build
 
 FROM node:21-alpine AS runtime
 
 WORKDIR /usr/src/app
 
-COPY --from=build /usr/src/app .
-COPY . .
-RUN npm run build
+COPY --from=build /usr/src/app/package*.json ./
+COPY --from=build /usr/src/app/dist ./dist
 
+# Install only production dependencies
+RUN npm install --production
 
-EXPOSE 3030
+EXPOSE 5000
 
 CMD ["npm", "start"]
