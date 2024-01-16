@@ -14,6 +14,8 @@ WORKDIR /usr/src/app
 
 COPY --from=build /usr/src/app .
 COPY . .
+RUN npm run build
+
 
 EXPOSE 3030
 
